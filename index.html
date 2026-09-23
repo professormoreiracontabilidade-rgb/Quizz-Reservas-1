@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz 1 — Patrimônio Líquido e Reservas</title>
+
+<style>
+:root {
+  --azul-escuro: #073763;
+  --azul: #0b5394;
+  --azul-claro: #d9efff;
+  --amarelo: #f4b400;
+  --verde: #20a464;
+  --vermelho: #d93025;
+  --texto: #172b3a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--texto);
+  background: linear-gradient(145deg, #cfeafa, #f7fbff);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  max-width: 760px;
+  min-height: 100vh;
+  margin: auto;
+  padding: 12px;
+}
+
+.cabecalho {
+  padding: 15px;
+  color: white;
+  text-align: center;
+  background: var(--azul-escuro);
+  border-radius: 18px 18px 8px 8px;
+  box-shadow: 0 6px 20px rgba(7, 55, 99, 0.25);
+}
+
+.cabecalho h1 {
+  margin: 0;
+  font-size: clamp(19px, 5vw, 29px);
+}
+
+.cabecalho p {
+  margin: 6px 0 0;
+  color: #cdeaff;
+  font-weight: bold;
+}
+
+.status {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  margin: 10px 2px;
+}
+
+.trilha {
+  height: 10px;
+  overflow: hidden;
+  background: white;
+  border-radius: 10px;
+}
+
+.barra {
+  width: 0;
+  height: 100%;
+  background: var(--amarelo);
+  transition: width 0.3s;
+}
+
+.placar,
+.contador {
+  padding: 7px 10px;
+  background: white;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.cartao {
+  flex: 1;
+  overflow: auto;
+  padding: clamp(16px, 4vw, 28px);
+  background: white;
+  border: 2px solid #b9d8ee;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(7, 55, 99, 0.14);
+}
+
+.etiqueta {
+  display: inline-block;
+  padding: 6px 10px;
+  color: white;
+  background: var(--azul);
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.banca {
+  margin: 11px 0;
+  color: #4b6577;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.enunciado {
+  margin: 14px 0;
+  font-size: clamp(17px, 4.2vw, 22px);
+  line-height: 1.45;
+  font-weight: bold;
+}
+
+.alternativa {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  margin: 9px 0;
+  padding: 13px;
+  color: var(--texto);
+  text-align: left;
+  background: #f8fcff;
+  border: 2px solid #d7e4ed;
+  border-radius: 13px;
+  font-size: 16px;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.alternativa .letra {
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  color: var(--azul-escuro);
+  background: var(--azul-claro);
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.alternativa.selecionada {
+  background: #e8f4ff;
+  border-color: var(--azul);
+}
+
+.alternativa.correta {
+  background: #ddf7e9;
+  border-color: var(--verde);
+}
+
+.alternativa.errada {
+  background: #fde4e1;
+  border-color: var(--vermelho);
+}
+
+.luzes {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  margin: 15px;
+}
+
+.luz {
+  width: 44px;
+  height: 44px;
+  background: #bbbbbb;
+  border: 5px solid #333333;
+  border-radius: 50%;
+  opacity: 0.25;
+}
+
+.luz.verde.acesa {
+  background: #31e981;
+  opacity: 1;
+  box-shadow: 0 0 25px #20d66b;
+}
+
+.luz.vermelha.acesa {
+  background: #ff4136;
+  opacity: 1;
+  box-shadow: 0 0 25px #ff4136;
+}
+
+.mensagem {
+  min-height: 25px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: 900;
+}
+
+.confirmar {
+  width: 100%;
+  padding: 14px;
+  color: #152638;
+  background: var(--amarelo);
+  border: none;
+  border-radius: 13px;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.confirmar:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.resolucao h2 {
+  margin-top: 14px;
+  color: var(--azul-escuro);
+  font-size: 25px;
+}
+
+.gabarito {
+  padding: 14px;
+  background: #dff5e9;
+  border-left: 6px solid var(--verde);
+  border-radius: 9px;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.explicacao {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.como-fgv {
+  padding: 13px;
+  background: #fff5cc;
+  border-left: 6px solid var(--amarelo);
+  border-radius: 9px;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.controles {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.controles button {
+  padding: 13px 6px;
+  color: white;
+  background: var(--azul-escuro);
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.controles .reiniciar {
+  background: #647785;
+}
+
+.controles button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: 7px;
+  }
+
+  .cartao {
+    padding: 15px;
+  }
+
+  .alternativa {
+    padding: 11px;
+    font-size: 15px;
+  }
+
+  .controles button {
+    font-size: 13px;
+  }
+
+  .banca {
+    font-size: 12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="app">
+
+  <header class="cabecalho">
+    <h1>CURSO DE CONTABILIDADE<br>PROFESSOR MOREIRA</h1>
+    <p>Patrimônio Líquido — Reservas | Quiz 1</p>
+  </header>
+
+  <section class="status">
+    <div class="trilha">
+      <div class="barra" id="barra"></div>
+    </div>
+
+    <div class="placar" id="placar">Acertos: 0</div>
+    <div class="contador" id="contador">Tela 1 de 24</div>
+  </section>
+
+  <section class="cartao" id="cartao"></section>
+
+  <nav class="controles">
+    <button id="voltar" onclick="mudarTela(-1)">← VOLTAR</button>
+    <button class="reiniciar" onclick="reiniciarQuiz()">↻ REINICIAR</button>
+    <button id="avancar" onclick="mudarTela(1)">AVANÇAR →</button>
+  </nav>
+
+</main>
+
+<script>
+const questoes = [
+  {
+    numero: 1,
+    banca: "FGV — TJ AP — Contador — 2024",
+    enunciado: `Em uma empresa S/A, a diferença entre o valor dos ativos e o dos passivos representa o Patrimônio Líquido no Balanço Patrimonial, ou seja, pode-se dizer que é o valor contábil pertencente aos acionistas ou sócios.
+
+Nesse sentido, o Patrimônio Líquido é subdividido em diversas contas em que:`,
+    alternativas: [
+      "A conta de Ajuste de Avaliação Patrimonial é considerada uma Reserva de Lucros.",
+      "A reserva legal tem como finalidade garantir a integridade do capital social e é a única de constituição obrigatória.",
+      "A conta ações em tesouraria representa as ações da empresa adquiridas por ela mesma e que aumentam o Patrimônio Líquido.",
+      "A reserva de contingências tem como finalidade compensar, em exercício passado, a diminuição do lucro decorrente de perda julgada provável.",
+      "A constituição da reserva de lucros a realizar é obrigatória quando o dividendo obrigatório ultrapassar a parcela realizada do lucro líquido."
+    ],
+    resposta: 1,
+    explicacao: `A alternativa B está correta. A reserva legal é constituída obrigatoriamente com 5% do lucro líquido do exercício, antes das demais destinações, respeitando o limite de 20% do capital social.
+
+Sua finalidade é assegurar a integridade do capital social. Ela somente pode ser utilizada para compensar prejuízos ou aumentar o capital social.
+
+O Ajuste de Avaliação Patrimonial não é reserva de lucros. As ações em tesouraria reduzem o Patrimônio Líquido. A reserva para contingências refere-se a perdas futuras, e a reserva de lucros a realizar é facultativa.`
+  },
+
+  {
+    numero: 2,
+    banca: "FGV — Câmara Municipal de Fortaleza — Contador — 2024",
+    enunciado: `De acordo com a Lei nº 6.404/1976 e modificações, o saldo da soma de algumas reservas de lucros não poderá ultrapassar o capital social.
+
+Assinale a opção que indica apenas as reservas consideradas nesse cálculo.`,
+    alternativas: [
+      "Legal e estatutária.",
+      "Legal e para contingências.",
+      "Estatutária e de incentivos fiscais.",
+      "Para contingências e de incentivos fiscais.",
+      "De lucros a realizar e de lucros para expansão."
+    ],
+    resposta: 0,
+    explicacao: `A alternativa A está correta.
+
+O saldo das reservas de lucros não pode ultrapassar o capital social. Entretanto, a Lei nº 6.404/1976 exclui desse limite três reservas:
+
+• Reserva para contingências;
+• Reserva de incentivos fiscais;
+• Reserva de lucros a realizar.
+
+Portanto, a reserva legal e a reserva estatutária são consideradas no cálculo do limite.`
+  },
+
+  {
+    numero: 3,
+    banca: "FGV — STN — Contábil — 2024",
+    enunciado: `O estatuto de uma sociedade empresária previa, anualmente, a constituição de uma reserva com o intuito de segregar uma parcela dos lucros correspondente a prováveis perdas extraordinárias futuras.
+
+Ao final de cada exercício, a sociedade empresária deveria constituir reserva:`,
+    alternativas: [
+      "Legal.",
+      "Estatutária.",
+      "Para retenção.",
+      "Para contingências.",
+      "De lucros a realizar."
+    ],
+    resposta: 3,
+    explicacao: `A alternativa D está correta.
+
+A reserva para contingências tem a finalidade de separar parte do lucro líquido para compensar, em exercício futuro, a diminuição do lucro decorrente de uma perda julgada provável e cujo valor possa ser estimado.
+
+A expressão “prováveis perdas extraordinárias futuras” identifica diretamente a reserva para contingências.`
+  },
+
+  {
+    numero: 4,
+    banca: "FGV — ALEMA — Contador — 2023",
+    enunciado: `De acordo com a Lei nº 6.404/1976 e modificações, o saldo das reservas de lucros, exceto as reservas para contingências, de incentivos fiscais e de lucros a realizar, não poderá ultrapassar o capital social.
+
+Atingindo esse limite, a assembleia deverá deliberar sobre a aplicação do excesso. Essa aplicação poderá ser feita:`,
+    alternativas: [
+      "Na liquidação de passivos ou na compra de ativos.",
+      "No aumento do capital social ou na compra de ações em tesouraria.",
+      "Na constituição de reservas para expansão ou na compra de ações em tesouraria.",
+      "Na constituição de reservas para expansão ou na distribuição de dividendos.",
+      "No aumento do capital social ou na distribuição de dividendos."
+    ],
+    resposta: 4,
+    explicacao: `A alternativa E está correta.
+
+Atingido o limite previsto para o saldo das reservas de lucros, a Assembleia Geral deverá deliberar sobre a aplicação do excesso.
+
+O excesso poderá ser utilizado:
+
+• Na integralização do capital social;
+• No aumento do capital social; ou
+• Na distribuição de dividendos.
+
+A Lei não prevê, nesse caso, a compra de ativos, a liquidação de passivos ou a formação de outra reserva.`
+  },
+
+  {
+    numero: 5,
+    banca: "FGV — Polícia Civil do Amazonas — Contabilidade — 2022",
+    enunciado: `Assinale a opção que indica a contrapartida do lançamento da reversão da reserva de lucros a realizar constituída em anos anteriores, quando os lucros nela contidos forem realizados financeiramente.`,
+    alternativas: [
+      "Dividendos a pagar.",
+      "Lucros acumulados.",
+      "Reserva de lucros.",
+      "Ações em tesouraria.",
+      "Reserva de ágio."
+    ],
+    resposta: 1,
+    explicacao: `A alternativa B está correta.
+
+Quando o lucro anteriormente considerado não realizado passa a ser realizado financeiramente, a reserva de lucros a realizar deve ser revertida.
+
+O lançamento transfere o valor dentro do Patrimônio Líquido:
+
+Débito: Reserva de Lucros a Realizar
+Crédito: Lucros Acumulados
+
+Após a reversão, o valor poderá receber a destinação societária adequada, especialmente para o pagamento do dividendo obrigatório.`
+  },
+
+ 
